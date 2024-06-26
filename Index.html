@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Firebase Chat</title>
+  <style>
+    #chat-box {
+      width: 300px;
+      height: 400px;
+      border: 1px solid #ccc;
+      overflow-y: scroll;
+    }
+    #message-input {
+      width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-box"></div>
+  <input type="text" id="message-input" placeholder="Type a message">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    var chatBox = document.getElementById('chat-box');
+    var messageInput = document.getElementById('message-input');
+
+    // メッセージを送信する関数
+    function sendMessage() {
+      var message = messageInput.value;
+      firebase.database().ref('messages').push().set({
+        "message": message
+      });
+      messageInput.value = '';
+    }
+
+    // メッセージを受信する関数
+    firebase.database().ref('messages').on('child_added', function(snapshot) {
+      var message = snapshot.val().message;
+      var messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      chatBox.appendChild(messageElement);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  </script>
+</body>
+</html>
